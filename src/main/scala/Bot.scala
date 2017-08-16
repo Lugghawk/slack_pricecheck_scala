@@ -7,7 +7,7 @@ import akka.actor.ActorSystem
 import com.pricecheck.client.{Client, SlackClient}
 import com.slackpricecheck.itad._
 
-object Bot {
+class Bot {
   implicit val system = ActorSystem("slack")
 
   var client: Client = _
@@ -21,6 +21,7 @@ object Bot {
   }
 
   def this(client: Client, itad_token: String) = {
+    this()
     connect(client, itad_token)
     client.onMessage { message =>
       if (shouldRespond(message.text)){
