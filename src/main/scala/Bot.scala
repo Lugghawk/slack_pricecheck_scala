@@ -14,14 +14,14 @@ object Bot {
   var itad: ITAD = _
 
   var selfId: String = _
-  def connect(): Unit = {
+  def connect(connect_client: Client, itad_token: String): Unit = {
     client = new SlackClient()
     selfId = client.self()
-    itad = ITAD(sys.env("ITAD_TOKEN"))
+    itad = ITAD(itad_token)
   }
 
-  def main(args: Array[String]): Unit ={
-    connect()
+  def this(client: Client, itad_token: String) = {
+    connect(client, itad_token)
     client.onMessage { message =>
       if (shouldRespond(message.text)){
         val game = message.text.replaceAll(s"<@$selfId>","").trim()
