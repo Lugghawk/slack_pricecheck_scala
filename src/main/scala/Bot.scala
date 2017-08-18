@@ -8,22 +8,12 @@ import akka.actor.ActorSystem
 import com.pricecheck.client.{Client, SlackClient}
 import com.slackpricecheck.itad._
 
-class Bot {
+class Bot (client: Client, itad: ITAD){
   implicit val system = ActorSystem("slack")
 
-  var client: Client = _
-  var itad: ITAD = _
+  var selfId: String = client.self()
 
-  var selfId: String = _
-  def connect(connect_client: Client, itad_client: ITAD): Unit = {
-    client = new SlackClient()
-    selfId = client.self()
-    itad = itad_client
-  }
-
-  def this(chat_client: Client, itad_client: ITAD) = {
-    this()
-    connect(chat_client, itad_client)
+  def run() = {
     client.onMessage { message =>
       if (shouldRespond(message.text)){
         val game = gameName(message.text)
@@ -31,7 +21,7 @@ class Bot {
 
         lowestPriceFuture onSuccess {
           case price =>
-            respondWithPrice(message.origin, client, price)
+            respondWithPrice(message.origin, price)
         }
 
         lowestPriceFuture onFailure {
@@ -42,7 +32,7 @@ class Bot {
     }
   }
 
-  def respondWithPrice(target: String, client: Client, price: Price):Unit = {
+  def respondWithPrice(target: String, price: Price):Unit = {
     val lowestPriceMessage = formatPriceMessage(price)
     client.sendMessage(target, lowestPriceMessage)
   }

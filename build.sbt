@@ -10,5 +10,7 @@ libraryDependencies += "net.databinder.dispatch" %% "dispatch-core" % "0.11.2"
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.4"
 libraryDependencies += "com.netaporter" %% "scala-uri" % "0.4.14"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0" % Test
 
 enablePlugins(JavaAppPackaging)
+scalacOptions ++= Seq("-feature")
