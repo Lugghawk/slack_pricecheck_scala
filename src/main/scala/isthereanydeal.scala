@@ -1,4 +1,4 @@
-package com.slackpricecheck.itad
+package com.pricecheck.itad
 
 import dispatch._
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,6 +1,6 @@
-import com.slackpricecheck.slack.Bot
+import com.pricecheck.slack.Bot
 import org.scalatest._
-import com.slackpricecheck.itad._
+import com.pricecheck.itad._
 
 class BotTest extends FlatSpec with Matchers{
 
