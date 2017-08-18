@@ -1,4 +1,4 @@
-import com.pricecheck.slack.Bot
+import com.pricecheck.bot.Bot
 import org.scalatest._
 import org.scalamock.scalatest.MockFactory
 import com.pricecheck.client.{Client}
@@ -7,16 +7,15 @@ import com.pricecheck.itad._
 class BotTest extends FlatSpec with Matchers with MockFactory{
 
   def fixture = new {
-    val client = mock[Client]
-    val itad = mock[ITAD]
+    val client = stub[Client]
+    val itad = stub[ITAD]
 
-    (client.self _).expects().returning("bot")
+    (client.self _).when().returns("bot")
   }
 
   "A bot" should "only speak when spoken to" in {
     val f = fixture
     val bot : Bot = new Bot(f.client, stub[ITAD])
-    bot.selfId = "bot"
     assert(bot.shouldRespond("<@bot> do stuff"))
     assert(!bot.shouldRespond("Don't respond bot!"))
   }
@@ -25,7 +24,6 @@ class BotTest extends FlatSpec with Matchers with MockFactory{
   it should "know which game it's being asked about" in {
     val f = fixture
     val bot : Bot = new Bot(f.client, mock[ITAD])
-    bot.selfId = "bot"
     bot.gameName("<@bot> game1") should be ("game1")
     bot.gameName("<@bot> my_long_game_name") should be ("my_long_game_name")
     bot.gameName("<@bot>") should be ("")
