@@ -1,12 +1,10 @@
-package com.slackpricecheck.slack
+package com.pricecheck.slack
 
-import slack.models.{Hello, Message}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Success, Failure}
 import akka.actor.ActorSystem
 import com.pricecheck.client.{Client, SlackClient}
-import com.slackpricecheck.itad._
+import com.pricecheck.itad._
 
 class Bot (client: Client, itad: ITAD){
   implicit val system = ActorSystem("slack")

@@ -12,5 +12,7 @@ libraryDependencies += "com.netaporter" %% "scala-uri" % "0.4.14"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0" % Test
 
+scalacOptions ++= Seq("-Ywarn-unused-import")
+
 enablePlugins(JavaAppPackaging)
 scalacOptions ++= Seq("-feature")
