@@ -1,4 +1,4 @@
-package com.pricecheck.slack
+package com.pricecheck.bot
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -9,9 +9,9 @@ import com.pricecheck.itad._
 class Bot (client: Client, itad: ITAD){
   implicit val system = ActorSystem("slack")
 
-  var selfId: String = client.self()
+  def selfId: String = client.self()
 
-  def run() = {
+  def run() : Unit = {
     client.onMessage { message =>
       if (shouldRespond(message.text)){
         val game = gameName(message.text)
