@@ -11,6 +11,7 @@ object App {
     val itad_token: String = sys.env("ITAD_TOKEN")
     val itad_client: ITAD = ITAD(itad_token)
     val bot:Bot = new Bot(slack_client, itad_client)
+    bot.run()
 
   }
 }
