@@ -1,6 +1,6 @@
 package com.pricecheck.app
 
-import com.pricecheck.slack.Bot
+import com.pricecheck.bot.Bot
 import com.pricecheck.client.{SlackClient, Client}
 import com.pricecheck.itad._
 
