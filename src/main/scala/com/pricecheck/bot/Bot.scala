@@ -3,7 +3,7 @@ package com.pricecheck.bot
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.ActorSystem
-import com.pricecheck.client.{Client, SlackClient}
+import com.pricecheck.client.{Client}
 import com.pricecheck.itad._
 
 class Bot (client: Client, itad: ITAD){
