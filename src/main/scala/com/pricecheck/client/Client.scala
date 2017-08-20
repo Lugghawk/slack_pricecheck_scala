@@ -10,6 +10,6 @@ trait Client {
 }
 
 trait Message {
-  val text: String
-  val origin: String
+  def text: String
+  def origin: String
 }
