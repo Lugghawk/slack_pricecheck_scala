@@ -5,28 +5,24 @@ import slack.rtm.SlackRtmClient
 import akka.actor.ActorSystem
 import scala.concurrent.Future
 
-class SlackClient extends Client {
-
-  connect()
-
-  implicit val system = ActorSystem("slack")
-  var client : SlackApiClient = _
-  var rtmClient : SlackRtmClient = _
-  var selfId : String = _
-
-
-  def connect(): Unit = {
-    client = SlackApiClient(sys.env("SLACK_TOKEN"))
-    rtmClient = SlackRtmClient(sys.env("SLACK_TOKEN"))
-    selfId = rtmClient.state.self.id
+class SlackClientBuilder(token: String)(implicit system: ActorSystem) extends ClientBuilder {
+  def connect(): Client = {
+    val client = SlackApiClient(token)
+    val rtmClient = SlackRtmClient(token)
+    new SlackClient(client, rtmClient)
   }
+}
+
+class SlackClient(api_client: SlackApiClient, rtm_client: SlackRtmClient) extends Client {
+
+  var selfId : String = rtm_client.state.self.id
 
   def sendMessage(target: String, message: String): Future[Long] = {
-    rtmClient.sendMessage(target, message)
+    rtm_client.sendMessage(target, message)
   }
 
   def onMessage(f: (Message) => Unit): Unit = {
-    rtmClient.onMessage( message => {
+    rtm_client.onMessage( message => {
       f(new SlackMessage(message))
     })
   }
