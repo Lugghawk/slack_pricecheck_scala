@@ -16,13 +16,12 @@ class Bot (client: Client, itad: ITAD)(implicit ec: ExecutionContext){
         val game = gameName(message.text)
         val lowestPriceFuture = fetchBestPriceForGame(game)
 
-        lowestPriceFuture.flatMap((price) => {
-            respondWithPrice(message.origin, price)
-        })
+        lowestPriceFuture.flatMap {
+          case price: Price => respondWithPrice(message.origin, price)
+        }
 
-        lowestPriceFuture onFailure {
-          case exception =>
-            client.sendMessage(message.origin, s"Could not find lowest price for $game.")
+        lowestPriceFuture.recoverWith {
+          case failure: Throwable => client.sendMessage(message.origin, s"Could not find lowest price for $game.")
         }
       }
     }

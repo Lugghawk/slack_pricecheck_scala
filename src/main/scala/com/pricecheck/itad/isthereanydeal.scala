@@ -39,19 +39,18 @@ class ITAD(token: String) {
 
   def getLowestPrice(gameName: String): Future[Price] = Future {
     val gamePlain = getPlain(gameName);
-    if (gamePlain.isDefined) {
-      lowestPrice(prices(gamePlain.get).get)
-    }else{
-      throw new Exception(s"No price found for $gameName")
+    gamePlain match {
+      case Some(plain) => lowestPrice(prices(plain))
+      case None => throw new Exception (s"No price found for $gameName")
     }
   }
 
-  def prices(gamePlain: String): Option[List[Price]] = {
+  def prices(gamePlain: String): List[Price] = {
     val pricesUrl = "https://api.isthereanydeal.com/v01/game/prices" ? ("key" -> token) & ("plains" -> gamePlain) & ("country" -> "CA")
     val svc = url(pricesUrl)
     val pricesHtml = Http(svc OK as.String)
     val pricesJson = Json.parse(pricesHtml())
-    val pricesList = (pricesJson \ "data" \ gamePlain \ "list" ).asOpt[List[Price]]
+    val pricesList = (pricesJson \ "data" \ gamePlain \ "list" ).as[List[Price]]
     return pricesList
   }
 
