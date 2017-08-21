@@ -45,9 +45,9 @@ object Shop {
       )(Shop.apply _)
 }
 case class Shop(id: String, name: String)
+
 object Price {
   implicit val ord: Ordering[Price] = Ordering.by(_.price_new)
-
   implicit val priceReader: Reads[Price] = (
         (JsPath \ "price_new").read[Double] and
         (JsPath \ "price_old").read[Double] and
