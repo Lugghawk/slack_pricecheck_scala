@@ -1,25 +1,13 @@
 package com.pricecheck.app
 
 import akka.actor.ActorSystem
-import java.util.concurrent.Executors
-import scala.concurrent.{ExecutionContext}
 import com.pricecheck.bot.Bot
 import com.pricecheck.client._
 import com.pricecheck.itad._
 
 object Main extends App{
-
-  implicit val execution_context = new ExecutionContext {
-    val threadPool = Executors.newFixedThreadPool(100)
-
-    def execute(runnable: Runnable) {
-      threadPool.submit(runnable)
-    }
-    def reportFailure(cause: Throwable){
-      //Maybe an error-reporting system..
-    }
-  }
   implicit val system = ActorSystem("bot")
+  implicit val execution_context = system.dispatchers.lookup("blocking-io-dispatcher")
   val slack_client: Client = new SlackClientBuilder(sys.env("SLACK_TOKEN")).connect()
   val itad_token: String = sys.env("ITAD_TOKEN")
   val itad_client: ITAD = ITAD(itad_token)

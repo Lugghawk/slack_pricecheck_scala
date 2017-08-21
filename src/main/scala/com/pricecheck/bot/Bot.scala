@@ -5,8 +5,7 @@ import akka.actor.ActorSystem
 import com.pricecheck.client.{Client}
 import com.pricecheck.itad._
 
-class Bot (client: Client, itad: ITAD)(implicit ec: ExecutionContext){
-  implicit val system = ActorSystem("slack")
+class Bot (client: Client, itad: ITAD)(implicit ec: ExecutionContext, actorSystem: ActorSystem){
 
   def selfId: String = client.self()
 

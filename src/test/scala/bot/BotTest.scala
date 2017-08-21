@@ -1,5 +1,6 @@
 import com.pricecheck.bot.Bot
 import org.scalatest._
+import akka.actor.ActorSystem
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalamock.scalatest.MockFactory
 import com.pricecheck.client.{Client}
@@ -7,6 +8,7 @@ import com.pricecheck.itad._
 
 class BotTest extends FlatSpec with Matchers with MockFactory{
 
+  implicit val system = ActorSystem("bot")
   def fixture = new {
     val client = stub[Client]
     val itad = stub[ITAD]
