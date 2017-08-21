@@ -1,41 +1,33 @@
 package com.pricecheck.itad
 
 import dispatch._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future}
+import scala.concurrent.{Future, ExecutionContext}
 import play.api.libs.json._
+import play.api.libs.json.Reads._ // Custom validation helpers
 import com.netaporter.uri.dsl._
+import play.api.libs.functional.syntax._ // Combinator syntax
 
 
 object ITAD {
-  def apply(token: String): ITAD = {
+  def apply(token: String)(implicit ec: ExecutionContext): ITAD = {
     new ITAD(token)
   }
 }
 
-class ITAD(token: String) {
+class ITAD(token: String)(implicit ec: ExecutionContext){
 
-  implicit val shopReader = new Reads[Shop] {
-    def reads(js: JsValue): JsResult[Shop] = {
-      JsSuccess(Shop(
-        (js \ "id").as[String],
-        (js \ "name").as[String]
-      ))
-    }
+  implicit val shopReader: Reads[Shop] = (
+        (JsPath \ "id").read[String] and
+        (JsPath \ "name").read[String]
+      )(Shop.apply _)
 
-  }
-
-  implicit val priceReader = new Reads[Price] {
-    def reads(js: JsValue): JsResult[Price] = {
-      JsSuccess(Price(
-        (js \ "price_new").as[Double],
-        (js \ "price_old").as[Double],
-        (js \ "price_cut").as[Double],
-        (js \ "url").as[String],
-        (js \ "shop").as[Shop]
-      ))
-    }
-  }
+  implicit val priceReader: Reads[Price] = (
+        (JsPath \ "price_new").read[Double] and
+        (JsPath \ "price_old").read[Double] and
+        (JsPath \ "price_cut").read[Double] and
+        (JsPath \ "url").read[String] and
+        (JsPath \ "shop").read[Shop]
+      )(Price.apply _)
 
   def getLowestPrice(gameName: String): Future[Price] = Future {
     val gamePlain = getPlain(gameName);
