@@ -32,7 +32,7 @@ class ITAD(token: String)(implicit ec: ExecutionContext){
   def getLowestPrice(gameName: String): Future[Price] = Future {
     val gamePlain = getPlain(gameName);
     gamePlain match {
-      case Some(plain) => lowestPrice(prices(plain))
+      case Some(plain) => prices(plain).min
       case None => throw new Exception (s"No price found for $gameName")
     }
   }
@@ -54,14 +54,14 @@ class ITAD(token: String)(implicit ec: ExecutionContext){
     (plain \ "data" \ "plain").asOpt[String]
   }
 
-  def lowestPrice(priceList: List[Price]): Price = {
-    priceList.minBy( price => (price.price_new) )
-  }
-
 }
 
 
 case class Shop(id: String, name: String)
+object Price {
+  implicit val ord: Ordering[Price] = Ordering.by(_.price_new)
+}
+
 case class Price(
   price_new: Double,
   price_old: Double,
