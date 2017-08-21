@@ -1,5 +1,6 @@
 import com.pricecheck.bot.Bot
 import org.scalatest._
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalamock.scalatest.MockFactory
 import com.pricecheck.client.{Client}
 import com.pricecheck.itad._

@@ -1,12 +1,11 @@
 package com.pricecheck.bot
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 import akka.actor.ActorSystem
 import com.pricecheck.client.{Client}
 import com.pricecheck.itad._
 
-class Bot (client: Client, itad: ITAD){
+class Bot (client: Client, itad: ITAD)(implicit ec: ExecutionContext){
   implicit val system = ActorSystem("slack")
 
   def selfId: String = client.self()
@@ -17,10 +16,9 @@ class Bot (client: Client, itad: ITAD){
         val game = gameName(message.text)
         val lowestPriceFuture = fetchBestPriceForGame(game)
 
-        lowestPriceFuture onSuccess {
-          case price =>
+        lowestPriceFuture.flatMap((price) => {
             respondWithPrice(message.origin, price)
-        }
+        })
 
         lowestPriceFuture onFailure {
           case exception =>
@@ -30,7 +28,7 @@ class Bot (client: Client, itad: ITAD){
     }
   }
 
-  def respondWithPrice(target: String, price: Price):Unit = {
+  def respondWithPrice(target: String, price: Price):Future[Any] = {
     val lowestPriceMessage = formatPriceMessage(price)
     client.sendMessage(target, lowestPriceMessage)
   }
