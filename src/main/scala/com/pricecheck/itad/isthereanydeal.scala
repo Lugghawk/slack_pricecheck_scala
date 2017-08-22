@@ -13,19 +13,22 @@ case class ITAD(token: String)(implicit ec: ExecutionContext){
 
   def getLowestPrice(gameName: String): Future[Price] = {
     val gamePlain = getPlain(gameName);
-    gamePlain map {
-        case Some(plain) => prices(plain).min
+    val priceList :Future[List[Price]] = gamePlain flatMap {
+        case Some(plain) => prices(plain)
         case None => throw new Exception (s"No price found for $gameName")
+    }
+
+    priceList map {
+      _.min
     }
   }
 
-  def prices(gamePlain: String): List[Price] = {
+  def prices(gamePlain: String): Future[List[Price]] = {
     val pricesUrl = "https://api.isthereanydeal.com/v01/game/prices" ? ("key" -> token) & ("plains" -> gamePlain) & ("country" -> "CA")
     val svc = url(pricesUrl)
     val pricesHtml = Http(svc OK as.String)
-    val pricesJson = Json.parse(pricesHtml())
-    val pricesList = (pricesJson \ "data" \ gamePlain \ "list" ).as[List[Price]]
-    return pricesList
+    val pricesJson = for (p <- pricesHtml) yield Json.parse(p)
+    for (p <- pricesJson) yield (p \ "data" \ gamePlain \ "list" ).as[List[Price]]
   }
 
   def getPlain(gameTitle: String): Future[Option[String]] = {
