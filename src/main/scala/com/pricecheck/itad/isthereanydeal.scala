@@ -14,8 +14,8 @@ case class ITAD(token: String)(implicit ec: ExecutionContext){
   def getLowestPrice(gameName: String): Future[Price] = {
     val gamePlain = getPlain(gameName);
     val priceList :Future[List[Price]] = gamePlain flatMap {
-        case Some(plain) => prices(plain)
-        case None => throw new Exception (s"No price found for $gameName")
+      case Some(plain) => prices(plain)
+      case None => throw new Exception (s"No price found for $gameName")
     }
 
     priceList map {
@@ -43,21 +43,21 @@ case class ITAD(token: String)(implicit ec: ExecutionContext){
 
 object Shop {
   implicit val shopReader: Reads[Shop] = (
-        (JsPath \ "id").read[String] and
-        (JsPath \ "name").read[String]
-      )(Shop.apply _)
+    (JsPath \ "id").read[String] and
+    (JsPath \ "name").read[String]
+  )(Shop.apply _)
 }
 case class Shop(id: String, name: String)
 
 object Price {
   implicit val ord: Ordering[Price] = Ordering.by(_.price_new)
   implicit val priceReader: Reads[Price] = (
-        (JsPath \ "price_new").read[Double] and
-        (JsPath \ "price_old").read[Double] and
-        (JsPath \ "price_cut").read[Double] and
-        (JsPath \ "url").read[String] and
-        (JsPath \ "shop").read[Shop]
-      )(Price.apply _)
+    (JsPath \ "price_new").read[Double] and
+    (JsPath \ "price_old").read[Double] and
+    (JsPath \ "price_cut").read[Double] and
+    (JsPath \ "url").read[String] and
+    (JsPath \ "shop").read[Shop]
+  )(Price.apply _)
 }
 
 case class Price(
