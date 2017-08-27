@@ -24,19 +24,30 @@ case class ITAD(token: String)(implicit ec: ExecutionContext){
   }
 
   def prices(gamePlain: String): Future[List[Price]] = {
-    val pricesUrl = "https://api.isthereanydeal.com/v01/game/prices" ? ("key" -> token) & ("plains" -> gamePlain) & ("country" -> "CA")
-    val svc = url(pricesUrl)
-    val pricesHtml = Http(svc OK as.String)
-    val pricesJson = for (p <- pricesHtml) yield Json.parse(p)
+    val pricesHtmlFuture = pricesHtml(gamePlain)
+    val pricesJson = for (p <- pricesHtmlFuture) yield Json.parse(p)
     for (p <- pricesJson) yield (p \ "data" \ gamePlain \ "list" ).as[List[Price]]
   }
 
+  def pricesHtml(gamePlain: String): Future[String] = {
+    val pricesUrl = "https://api.isthereanydeal.com/v01/game/prices" ? ("key" -> token) & ("plains" -> gamePlain) & ("country" -> "CA")
+    getUrlAsString(pricesUrl)
+  }
+
   def getPlain(gameTitle: String): Future[Option[String]] = {
-    val plainUrl = "https://api.isthereanydeal.com/v02/game/plain/" ? ("key" -> token) & ("title" -> gameTitle)
-    val svc = url(plainUrl)
-    val gamePlain = Http(svc OK as.String)
-    val plain = for (p <- gamePlain) yield Json.parse(p)
+    val gamePlainHtmlFuture = gamePlainHtml(gameTitle)
+    val plain = for (p <- gamePlainHtmlFuture) yield Json.parse(p)
     for (p <- plain) yield (p \ "data" \ "plain").asOpt[String]
+  }
+
+  def gamePlainHtml(title: String): Future[String] = {
+    val plainUrl = "https://api.isthereanydeal.com/v02/game/plain/" ? ("key" -> token) & ("title" -> title)
+    getUrlAsString(plainUrl)
+  }
+
+  def getUrlAsString(urlToFetch: String): Future[String] = {
+    val svc = url(urlToFetch)
+    Http(svc OK as.String)
   }
 
 }
