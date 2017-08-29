@@ -23,14 +23,18 @@ class SlackClient(api_client: SlackApiClient, rtm_client: SlackRtmClient) extend
 
   def onMessage(f: (Message) => Unit): Unit = {
     rtm_client.onMessage( message => {
-      f(new SlackMessage(message))
+      f(SlackMessage(message))
     })
   }
 
   def self(): String = selfId
 }
 
-class SlackMessage(message: slack.models.Message) extends Message {
-  val text: String = message.text
-  val origin: String = message.channel
+
+object SlackMessage {
+  def apply(message: slack.models.Message): SlackMessage = {
+    SlackMessage(message.text, message.channel)
+  }
 }
+
+final case class SlackMessage(text: String, origin: String) extends Message
