@@ -35,8 +35,7 @@ class Bot (client: Client, itad: ITAD)(implicit ec: ExecutionContext, actorSyste
    * Move to Price class
    */
   def formatPriceMessage(price: Price): String = {
-    val formatted_price = "%1.2f" format price.price_new
-    s"Found lowest price of $$${formatted_price} at ${price.shop.name} (${price.url})"
+    f"Found lowest price of $$${price.price_new}%1.2f at ${price.shop.name} (${price.url})"
   }
 
   def fetchBestPriceForGame(game: String): Future[Price] = {
