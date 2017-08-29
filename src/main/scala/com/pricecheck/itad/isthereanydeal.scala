@@ -1,14 +1,14 @@
 package com.pricecheck.itad
 
-import dispatch._
 import scala.concurrent.{Future, ExecutionContext}
 import play.api.libs.json._
 import play.api.libs.json.Reads._ // Custom validation helpers
 import com.netaporter.uri.dsl._
 import play.api.libs.functional.syntax._ // Combinator syntax
+import com.pricecheck.http.HttpClient
 
 
-case class ITAD(token: String)(implicit ec: ExecutionContext){
+case class ITAD(token: String, httpClient: HttpClient)(implicit ec: ExecutionContext){
 
 
   def getLowestPrice(gameName: String): Future[Price] = {
@@ -46,8 +46,7 @@ case class ITAD(token: String)(implicit ec: ExecutionContext){
   }
 
   def getUrlAsString(urlToFetch: String): Future[String] = {
-    val svc = url(urlToFetch)
-    Http(svc OK as.String)
+    httpClient.getUrlAsString(urlToFetch)
   }
 
 }
