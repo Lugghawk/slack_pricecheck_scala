@@ -4,7 +4,7 @@ import dispatch._
 import scala.concurrent.{Future, ExecutionContext}
 
 
-sealed trait HttpClient {
+trait HttpClient {
   def getUrlAsString(urlToFetch: String):Future[String]
 }
 
