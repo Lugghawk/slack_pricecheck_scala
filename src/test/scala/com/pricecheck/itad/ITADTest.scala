@@ -18,6 +18,18 @@ class ITADTest extends FlatSpec with Matchers with MockFactory {
     val itad = ITAD("_testtoken_", httpClient)
 
     val result = Await.result(itad.getPlain(gameTitle), 500.millis)
-    result should be (Some("stellaris")) 
+    result should be (Some("stellaris"))
+  }
+
+  it should "return a None when no plain exists on isthereanydeal.com" in {
+    val httpClient = mock[HttpClient]
+    val gameTitle:String = "Non-existant-game"
+    (httpClient.getUrlAsString _)
+      .expects(s"https://api.isthereanydeal.com/v02/game/plain/?key=_testtoken_&title=$gameTitle")
+      .returning(Future {"{\".meta\":{\"match\":false,\"active\":false},\"data\":[]}"})
+
+    val itad = ITAD("_testtoken_", httpClient)
+    val result = Await.result(itad.getPlain(gameTitle), 500.millis)
+    result should be (None)
   }
 }
